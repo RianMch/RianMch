@@ -7,6 +7,11 @@
   <!-- Linguagens mais usadas -->
   <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=RianMch&layout=compact&hide_border=true&bg_color=000000&title_color=00FF00&text_color=00FF00" alt="Linguagens mais usadas" style="margin-top: 10px; width: 100%; max-width: 500px;" />
 </div>
+<picture align="center">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/RianMch/RianMch/output/github-contribution-grid-snake-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/RianMch/RianMch/output/github-contribution-grid-snake-dark.svg">
+  <img align="center" alt="github contribution grid snake animation" src="https://raw.githubusercontent.com/RianMch/RianMch/output/github-contribution-grid-snake.svg">
+</picture>
 
 <div>
   <a href="https://instagram.com/Rian_machad0" target="_blank"><img src="https://img.shields.io/badge/-Instagram-%23E4405F?style=for-the-badge&logo=instagram&logoColor=white" target="_blank"></a>
