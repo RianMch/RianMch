@@ -4,7 +4,7 @@
   
   <p style="font-size: 1em; line-height: 1.6; max-width: 700px; margin: 0 auto 30px;">
     Atualmente sou estudante de <strong>Sistemas de Informação</strong> na <strong>Faculdade Unibave (Barriga-Verde)</strong>.<br/>
-    Também estudo programação pelo site <strong>Da Aula</strong>, com foco especial no <strong>desenvolvimento back-end</strong>.<br/>
+    Também estudo programação pelo site <strong>Da Alura</strong>, com foco especial no <strong>desenvolvimento back-end</strong>.<br/>
     Estou explorando novas tecnologias, mas no momento estou solidificando meus conhecimentos em <strong>lógica de programação</strong>.
   </p>
 
