@@ -1,44 +1,105 @@
-name: generate animation
+name: Gerar imagens do perfil
 
 on:
-  # run automatically every 24 hours
+  # todo dia à meia-noite (UTC)
   schedule:
-    - cron: "0 */24 * * *" 
-  
-  # allows to manually run the job at any time
+    - cron: "0 0 * * *"
+
+  # botão "Run workflow" na aba Actions
   workflow_dispatch:
-  
-  # run on every push on the master branch
+
+  # a cada push no branch padrão
   push:
     branches:
-    - master
-    
-  
+      - main
+
+# por padrão, nenhum job pode escrever no repositório
+permissions:
+  contents: read
+
+# uma publicação por vez; uma execução nova cancela a anterior
+concurrency:
+  group: imagens-do-perfil
+  cancel-in-progress: true
+
+# paleta dos cartões de estatística, definida num lugar só
+env:
+  TEMA_CLARO: hide_border=true&show_icons=true&title_color=004080&icon_color=004080&text_color=333333
+  TEMA_ESCURO: hide_border=true&show_icons=true&theme=github_dark
 
 jobs:
-  generate:
-    permissions: 
-      contents: write
+  gerar:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    
+    timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
-      # generates a snake game from a github user (<github_user_name>) contributions graph, output a svg animation at <svg_out_path>
-      - name: generate github-contribution-grid-snake.svg
-        uses: Platane/snk/svg-only@v3
+      - name: Gerar a cobrinha do gráfico de contribuições
+        uses: Platane/snk/svg-only@d8f6715049803e982ee5ff501b6b9b7d5deeb09b # v3.5.0
         with:
           github_user_name: ${{ github.repository_owner }}
           outputs: |
-            dist/github-contribution-grid-snake.svg
-            dist/github-contribution-grid-snake-dark.svg?palette=github-dark
-          
-          
-      # push the content of <build_dir> to a branch
-      # the content will be available at https://raw.githubusercontent.com/<github_user>/<repository>/<target_branch>/<file> , or as github page
-      - name: push github-contribution-grid-snake.svg to the output branch
-        uses: crazy-max/ghaction-github-pages@v3.1.0
+            dist/snake.svg
+            dist/snake-dark.svg?palette=github-dark
+
+      - name: Gerar cartão de estatísticas (claro)
+        uses: stats-organization/github-readme-stats-action@2c498845f71017821efaad14293ebc736156ef21 # v2.1.0
+        with:
+          card: stats
+          options: username=${{ github.repository_owner }}&${{ env.TEMA_CLARO }}
+          path: dist/stats.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Gerar cartão de estatísticas (escuro)
+        uses: stats-organization/github-readme-stats-action@2c498845f71017821efaad14293ebc736156ef21 # v2.1.0
+        with:
+          card: stats
+          options: username=${{ github.repository_owner }}&${{ env.TEMA_ESCURO }}
+          path: dist/stats-dark.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Gerar cartão de linguagens (claro)
+        uses: stats-organization/github-readme-stats-action@2c498845f71017821efaad14293ebc736156ef21 # v2.1.0
+        with:
+          card: top-langs
+          options: username=${{ github.repository_owner }}&layout=compact&${{ env.TEMA_CLARO }}
+          path: dist/top-langs.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Gerar cartão de linguagens (escuro)
+        uses: stats-organization/github-readme-stats-action@2c498845f71017821efaad14293ebc736156ef21 # v2.1.0
+        with:
+          card: top-langs
+          options: username=${{ github.repository_owner }}&layout=compact&${{ env.TEMA_ESCURO }}
+          path: dist/top-langs-dark.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Guardar as imagens para o job de publicação
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: imagens
+          path: dist/
+          if-no-files-found: error
+
+  publicar:
+    needs: gerar
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # só este job pode escrever, e só para atualizar o branch output
+    permissions:
+      contents: write
+    steps:
+      - name: Baixar as imagens geradas
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: imagens
+          path: dist
+
+      - name: Publicar no branch output
+        uses: crazy-max/ghaction-github-pages@1d6ee9b181a81033a16bd707a1401afa978daab4 # v5.0.0
         with:
           target_branch: output
           build_dir: dist
+          jekyll: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
